@@ -1,6 +1,9 @@
 #pragma once
 #include <wx/frame.h>
 #include <memory>
+#include <wx/bitmap.h>
+#include <wx/gdicmn.h>
+
 
 class FileMungusPathLogic;
 

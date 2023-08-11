@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project (FileMungus VERSION 1.0 LANGUAGES CXX C)
 find_package(wxWidgets REQUIRED COMPONENTS core base std richtext propgrid adv)
+add_subdirectory(thirdparty/nlohmann)
 
 list(APPEND SOURCES
     src/main.cpp
@@ -11,6 +12,7 @@ list(APPEND SOURCES
     src/FileView.cpp
     src/SidePanel.cpp
     src/FileMungusPathLogic.cpp
+    src/resource.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) 
@@ -25,7 +27,7 @@ target_include_directories(FileMungus PUBLIC include)
 if (WIN32)
     target_link_libraries(FileMungus PRIVATE wx::core wx::base wx::std wx::richtext wx::propgrid wx::adv)
 else()
-    target_link_libraries(FileMungus PRIVATE ${wxWidgets_LIBRARIES})
+    target_link_libraries(FileMungus ${wxWidgets_LIBRARIES} nlohmann)
 endif()
 
 target_compile_options(FileMungus PRIVATE "$<${gcc_like_cxx}:-Wall;-Wextra;-Wconversion;-std=c++17>"  

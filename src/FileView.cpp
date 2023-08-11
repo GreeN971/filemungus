@@ -114,6 +114,5 @@ void FileView::DoOperation(wxCommandEvent &event)
     else if(selected.StartsWith(GetFolderMarker()))
         m_pathLogic->SetPath(m_pathLogic->GetPath() + selected.substr(GetFolderMarker().size()));
     else 
-        throw std::runtime_error("WTF");
-        
+        throw std::runtime_error("WTF");   
 }

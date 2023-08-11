@@ -4,6 +4,7 @@
 #include "FileView.h"
 #include "FileMungusPathLogic.h"
 #include <memory>
+#include <iostream>
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
 #include <wx/listbox.h>
@@ -11,11 +12,16 @@
 #include <wx/control.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
+#include <nlohmann/json.hpp>
+#include <wx/xrc/xmlres.h>
 
 FileMungusMainWindow::FileMungusMainWindow()
     : wxFrame(nullptr, wxID_ANY, "FileMungus")
     , m_pathLogic(std::make_unique<FileMungusPathLogic>())
 {
+    wxIcon icon = wxXmlResource::Get()->LoadIcon("sussy_icon");;
+    SetIcon(icon); 
+
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer *content = new wxBoxSizer(wxVERTICAL);
 
@@ -27,7 +33,7 @@ FileMungusMainWindow::FileMungusMainWindow()
 
     TopPanel *topPanel = new TopPanel(this, m_pathLogic.get());
     topPanelSizer->Add(topPanel, 1, wxEXPAND);
-
+    
     topPanel->SetBackgroundColour(wxColour("FE9E21"));
 
     wxBoxSizer *bottomPanelSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -38,13 +44,17 @@ FileMungusMainWindow::FileMungusMainWindow()
     bottomPanelSizer->Add(bottomPanel, 1, wxEXPAND, 5);
     
     sizer->Add(bottomPanelSizer);    
-
-    m_pathLogic->SetPath("/home/patrik");
+    
+    m_pathLogic->SetPath(getenv("HOME")); //getenviroment
 
     content->Add(fileView, 1, wxEXPAND);
     sizer->Add(content, 1, wxEXPAND);
     this->SetSizer(sizer);    
-    
+
+    nlohmann::json j;
+    j["Name"] = "Patrik";
+    j["Age"] = m_pathLogic->GetPath();
+    std::cout << j.dump() << std::endl;
 };
 
 FileMungusMainWindow::~FileMungusMainWindow() = default;
