@@ -15,11 +15,11 @@ TopPanel::TopPanel(wxWindow *parent, FileMungusPathLogic *pathLogic)
 {
     assert(pathLogic != nullptr);
 
-    const auto leftBtnMargin = FromDIP(5);
-    const auto rightBtnMargin = FromDIP(3);
+    const int leftBtnMargin = FromDIP(5);
+    const int rightBtnMargin = FromDIP(3);
     
-    auto *sizer = new wxBoxSizer(wxVERTICAL); 
-    auto *content = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL); 
+    wxBoxSizer *content = new wxBoxSizer(wxHORIZONTAL);
     
     sizer->Add(content, 1, wxEXPAND | wxTOP | wxBOTTOM, 3);
 
@@ -59,7 +59,7 @@ TopPanel::TopPanel(wxWindow *parent, FileMungusPathLogic *pathLogic)
     content->Add(m_backBtn, 0, wxLEFT, leftBtnMargin);
     content->Add(m_fowardBtn, 0, wxLEFT, rightBtnMargin);
 
-    auto *textBoxSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *textBoxSizer = new wxBoxSizer(wxVERTICAL);
     m_pathTextBox = new wxTextCtrl(this, wxID_ANY);
     m_pathLogic->SubscribeToPathEvent([this](PathEvent evt){
         if(evt == PathEvent::UpdatePath)

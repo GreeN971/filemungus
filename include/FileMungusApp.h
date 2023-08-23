@@ -5,7 +5,7 @@
 class FileMungusApp : public wxApp
 {
 public:
-    virtual bool OnInit();
+    bool OnInit() override;
 
     
 private: 

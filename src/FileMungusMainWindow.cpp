@@ -38,10 +38,10 @@ FileMungusMainWindow::FileMungusMainWindow()
 
     wxBoxSizer *bottomPanelSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    BottomPanel *bottomPanel = new BottomPanel(this);
-    bottomPanel->SetMinSize(wxSize(50,50));
-    bottomPanel->SetBackgroundColour(wxColour("FE9E21"));
-    bottomPanelSizer->Add(bottomPanel, 1, wxEXPAND, 5);
+    //BottomPanel *bottomPanel = new BottomPanel(this);
+    //bottomPanel->SetMinSize(wxSize(50,50));
+    //bottomPanel->SetBackgroundColour(wxColour("FE9E21"));
+    //bottomPanelSizer->Add(bottomPanel, 1, wxEXPAND, 5);
     
     sizer->Add(bottomPanelSizer);    
     

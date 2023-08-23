@@ -13,6 +13,10 @@ list(APPEND SOURCES
     src/SidePanel.cpp
     src/FileMungusPathLogic.cpp
     src/resource.cpp
+    src/FileMenu.cpp
+    src/RenameDialog.cpp
+    src/CustomDialog.cpp
+    src/CreateDialog.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) 

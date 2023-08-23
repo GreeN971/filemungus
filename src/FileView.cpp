@@ -13,6 +13,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <wx/regex.h>
+#include "FileMenu.h"
+#include "RenameDialog.h"
+#include <wx/menu.h>
+#include <wx/msgdlg.h>
 
 const wxString &GetFileMarker()
 {
@@ -26,8 +30,10 @@ const wxString &GetFolderMarker()
     return marker;
 }
 
-FileView::FileView(wxWindow *parent, FileMungusPathLogic *pathLogic) : wxWindow(parent, wxID_ANY)
-        ,  m_pathLogic(pathLogic)
+FileView::FileView(wxWindow *parent, FileMungusPathLogic *pathLogic) 
+        : wxWindow(parent, wxID_ANY)
+        , m_pathLogic(pathLogic)
+        , m_menu(this)
 {
     m_content = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     auto *sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -37,7 +43,11 @@ FileView::FileView(wxWindow *parent, FileMungusPathLogic *pathLogic) : wxWindow(
             ScanPath(m_pathLogic->GetPath());
     });
 
-    m_content->Bind(wxEVT_LISTBOX_DCLICK, &FileView::DoOperation, this, wxID_ANY); 
+    m_content->Bind(wxEVT_LISTBOX_DCLICK, &FileView::LeftDoubleClickHandler, this, wxID_ANY); 
+    
+    m_content->Bind(wxEVT_RIGHT_DOWN, [this](wxMouseEvent&){
+        m_content->PopupMenu(&m_menu);
+    });
 
     SetSizer(sizer);
 }
@@ -86,7 +96,7 @@ void FileView::GoToPreviousFolder()
     m_pathLogic->SetPath(path.substr(0, static_cast<size_t>(distance))); //substring 
 }
 
-void FileView::DoOperation(wxCommandEvent &event)
+void FileView::LeftDoubleClickHandler(wxCommandEvent&)
 {
     int index = m_content->GetSelection();
     if(index == wxNOT_FOUND)
@@ -101,18 +111,58 @@ void FileView::DoOperation(wxCommandEvent &event)
     wxString selected = m_content->GetString(static_cast<unsigned int>(index)); //GetSelection only returns int
                                                                                 //GetString only accepts unsigned int 
                                                                                 //this is why static cast is needed
-    //idealni zjistit zda je to slozka TO DO
     if(selected.StartsWith(GetFileMarker()))
     {
         wxRegEx reFile(wxString::FromUTF8(".+\\..+")); //using wxWidgets buildin Regex, it first goes through string until it finds "." after that It reads file extension and than opens it accordingly 
         wxString fileName = selected.substr(GetFileMarker().size());
         if(reFile.Matches(fileName))
-            system(("xdg-open " + m_pathLogic->GetPath() + fileName).c_str()); 
+            system(("xdg-open " + m_pathLogic->GetPath() + fileName).c_str()); //system accepts only C type string
         else 
             system((m_pathLogic->GetPath() + fileName).c_str());
     }
     else if(selected.StartsWith(GetFolderMarker()))
         m_pathLogic->SetPath(m_pathLogic->GetPath() + selected.substr(GetFolderMarker().size()));
     else 
-        throw std::runtime_error("WTF");   
+        throw std::runtime_error("WTF");  
 }
+
+void FileView::RenameSelected()
+{
+    long index = m_content->GetSelection();
+    if(index == wxNOT_FOUND || index == 0)
+        return;
+   
+    wxString selected = m_content->GetString(static_cast<unsigned int>(index));
+    
+    wxString marker;
+    wxString fileName; 
+    if(selected.StartsWith(GetFileMarker()))
+    {
+        marker = GetFileMarker();
+        fileName = selected.substr(marker.size());
+    }
+    else if(selected.StartsWith(GetFolderMarker()))
+    {   
+        marker = GetFolderMarker();
+        fileName = selected.substr(marker.size());
+    }
+    else 
+        throw std::runtime_error("WTF2");
+    
+    RenameDialog dlg(m_pathLogic->GetPath(), fileName);
+    dlg.ShowModal();
+
+    if(!dlg.IsSuccesfull())
+        return;
+    
+    if(fileName == dlg.GetNewFileName())
+        return;
+    else if(wxFileExists(m_pathLogic->GetPath() + dlg.GetNewFileName()))
+    {
+        wxMessageBox("File with same name already exists", "warning", wxOK | wxCENTRE | wxICON_INFORMATION);
+        return;
+    }
+    rename((m_pathLogic->GetPath() + fileName).c_str(), (m_pathLogic->GetPath() + dlg.GetNewFileName()).c_str()); 
+
+    m_content->SetString(static_cast<unsigned int>(index), marker + dlg.GetNewFileName());
+}   
