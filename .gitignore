@@ -34,3 +34,7 @@
 build/*
 
 .cache/*
+
+cmake/cmake/*
+
+cmake/third_party/*

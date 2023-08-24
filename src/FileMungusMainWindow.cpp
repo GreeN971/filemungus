@@ -12,7 +12,6 @@
 #include <wx/control.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
-#include <nlohmann/json.hpp>
 #include <wx/xrc/xmlres.h>
 
 FileMungusMainWindow::FileMungusMainWindow()
@@ -44,17 +43,14 @@ FileMungusMainWindow::FileMungusMainWindow()
     //bottomPanelSizer->Add(bottomPanel, 1, wxEXPAND, 5);
     
     sizer->Add(bottomPanelSizer);    
-    
+#ifdef WIN32
+    m_pathLogic->SetPath(getenv("USERPROFILE"));
+#else 
     m_pathLogic->SetPath(getenv("HOME")); //getenviroment
-
+#endif
     content->Add(fileView, 1, wxEXPAND);
     sizer->Add(content, 1, wxEXPAND);
     this->SetSizer(sizer);    
-
-    nlohmann::json j;
-    j["Name"] = "Patrik";
-    j["Age"] = m_pathLogic->GetPath();
-    std::cout << j.dump() << std::endl;
 };
 
 FileMungusMainWindow::~FileMungusMainWindow() = default;

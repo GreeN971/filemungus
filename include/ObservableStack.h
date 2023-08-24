@@ -16,7 +16,7 @@ class ObservableStack
 {
 private: 
     std::vector<std::function<void(StackEvent)>> m_subscribers; 
-    using subscriber_t = decltype(m_subscribers)::value_type; 
+    using subscriber_t = std::function<void(StackEvent)>; 
 
 public: 
     void Push(const T &el)

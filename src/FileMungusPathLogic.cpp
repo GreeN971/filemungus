@@ -22,8 +22,8 @@ void FileMungusPathLogic::SetPath(const wxString &path)
     if(path.IsEmpty())
         return;
     wxString validPath = path;
-    if(*validPath.rbegin() != '/') //overloaded operator *, its not a pointer 
-        validPath.Append('/');
+    if(*validPath.rbegin() != FileMungusPathLogic::GetPathSeparator()) //overloaded operator *, its not a pointer 
+        validPath.Append(FileMungusPathLogic::GetPathSeparator());
      
     if(m_currentPath == validPath)
         return;
@@ -40,6 +40,15 @@ void FileMungusPathLogic::SetPath(const wxString &path)
 const wxString &FileMungusPathLogic::GetPath() const noexcept
 {
     return m_currentPath;
+}
+
+/* static */ char FileMungusPathLogic::GetPathSeparator()
+{
+#ifdef WIN32
+    return '\\';
+#else 
+    return '/';
+#endif
 }
 
 void FileMungusPathLogic::Undo()

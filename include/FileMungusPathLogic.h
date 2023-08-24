@@ -15,6 +15,7 @@ public:
     void SubscribeToPathEvent(const std::function<void(PathEvent)> &sub);
     void SetPath(const wxString &path);
     const wxString &GetPath() const noexcept;
+    static char GetPathSeparator();
     void Undo();
     void Redo();
 

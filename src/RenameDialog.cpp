@@ -3,6 +3,7 @@
 #include <wx/button.h>
 #include <wx/textctrl.h>
 #include <wx/stattext.h>
+#include <wx/log.h>
 
 RenameDialog::RenameDialog(const wxString &path, const wxString &fileName) 
     : CustomDialog("Rename Dialog")

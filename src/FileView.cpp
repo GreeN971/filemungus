@@ -56,7 +56,7 @@ wxString DifferentiateFF(const wxString &path, const wxString &fileName) //FF = 
 {
     wxString out;
     wxString tmp;
-    if(wxDirExists(path + '/' + fileName) == true)
+    if(wxDirExists(path + FileMungusPathLogic::GetPathSeparator() + fileName) == true)
     
         out = GetFolderMarker() + fileName;
     else
@@ -87,10 +87,14 @@ void FileView::GoToPreviousFolder()
 {
     const wxString &path = m_pathLogic->GetPath();
 
+#ifdef WIN32
+    if (path.length() == 3) /* C:\ */
+        return;
+#else
     if(path == "/")
         return;
-    
-    decltype(path.rbegin()) last = std::find(path.rbegin() + 1, path.rend(), '/'); //well its not AUTO
+#endif    
+    decltype(path.rbegin()) last = std::find(path.rbegin() + 1, path.rend(), FileMungusPathLogic::GetPathSeparator()); //well its not AUTO
     assert(last != path.rend());
     ptrdiff_t distance = path.rend() - last;
     m_pathLogic->SetPath(path.substr(0, static_cast<size_t>(distance))); //substring 
@@ -111,14 +115,24 @@ void FileView::LeftDoubleClickHandler(wxCommandEvent&)
     wxString selected = m_content->GetString(static_cast<unsigned int>(index)); //GetSelection only returns int
                                                                                 //GetString only accepts unsigned int 
                                                                                 //this is why static cast is needed
-    if(selected.StartsWith(GetFileMarker()))
+    if (selected.StartsWith(GetFileMarker()))
     {
+#ifdef WIN32
+        wxRegEx reFile(wxString::FromUTF8(".+\\..+^(exe)$"));
+#else
         wxRegEx reFile(wxString::FromUTF8(".+\\..+")); //using wxWidgets buildin Regex, it first goes through string until it finds "." after that It reads file extension and than opens it accordingly 
+#endif
         wxString fileName = selected.substr(GetFileMarker().size());
-        if(reFile.Matches(fileName))
-            system(("xdg-open " + m_pathLogic->GetPath() + fileName).c_str()); //system accepts only C type string
-        else 
-            system((m_pathLogic->GetPath() + fileName).c_str());
+        if (reFile.Matches(fileName))
+        {
+#ifdef WIN32
+            system(("start \"" + m_pathLogic->GetPath() + fileName + "\"").c_str());
+#else
+            system(("xdg-open \"" + m_pathLogic->GetPath() + fileName + "\"").c_str()); //system accepts only C type string
+#endif
+        }
+        else
+            system(("\"" + m_pathLogic->GetPath() + fileName + "\"").c_str());
     }
     else if(selected.StartsWith(GetFolderMarker()))
         m_pathLogic->SetPath(m_pathLogic->GetPath() + selected.substr(GetFolderMarker().size()));
