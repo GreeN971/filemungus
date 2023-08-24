@@ -1,4 +1,4 @@
-find_package(wxWidgets 3.2.0 REQUIRED COMPONENTS core base std richtext propgrid adv)
+find_package(wxWidgets 3.2.0 COMPONENTS core base std richtext propgrid adv)
 if(NOT wxWidgets_FOUND)
     set(CPM_USE_LOCAL_PACKAGES False)
 
