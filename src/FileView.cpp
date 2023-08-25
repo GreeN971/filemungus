@@ -12,9 +12,13 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fstream>
 #include <wx/regex.h>
 #include "FileMenu.h"
 #include "RenameDialog.h"
+#include "CreateDialog.h"
 #include <wx/menu.h>
 #include <wx/msgdlg.h>
 
@@ -179,4 +183,62 @@ void FileView::RenameSelected()
     rename((m_pathLogic->GetPath() + fileName).c_str(), (m_pathLogic->GetPath() + dlg.GetNewFileName()).c_str()); 
 
     m_content->SetString(static_cast<unsigned int>(index), marker + dlg.GetNewFileName());
-}   
+}
+
+void FileView::CreateFile()
+{
+    long index = m_content->GetCount();
+    if(index == wxNOT_FOUND || index == 0)
+        return;
+
+    wxString fileMarker = GetFileMarker();
+    wxString newFileName;
+    
+    CreateDialog dlg;
+    dlg.ShowModal();
+
+    if(!dlg.IsSuccesfull())
+        return;
+    
+    if(wxFileExists(m_pathLogic->GetPath() + dlg.GetNewFileName()))
+    {
+        wxMessageBox("File with same name already exists", "warning", wxOK | wxCENTRE | wxICON_INFORMATION);
+        return;
+    }
+    
+    std::ofstream myFile((m_pathLogic->GetPath() + dlg.GetNewFileName()).c_str());
+    myFile.close();
+    
+    ScanPath(m_pathLogic->GetPath());
+}
+
+void FileView::CreateFolder()
+{
+    long index = m_content->GetCount();
+    if(index == wxNOT_FOUND || index == 0)
+        return;
+
+    wxString folderMarker = GetFolderMarker();
+    wxString newFileName;
+    
+    CreateDialog dlg;
+    dlg.ShowModal();
+
+    if(!dlg.IsSuccesfull())
+        return;
+    
+    if(wxFileExists(m_pathLogic->GetPath() + dlg.GetNewFileName()))
+    {
+        wxMessageBox("File with same name already exists", "warning", wxOK | wxCENTRE | wxICON_INFORMATION);
+        return;
+    }
+
+#ifdef WIN32
+    _mkdir((m_pathLogic->GetPath() + dlg.GetNewFileName()).c_str()); 
+#else    
+    mkdir((m_pathLogic->GetPath() + dlg.GetNewFileName()).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH); //0777 superman 
+#endif
+    
+    ScanPath(m_pathLogic->GetPath());
+}
+

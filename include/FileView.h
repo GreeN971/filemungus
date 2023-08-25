@@ -15,6 +15,8 @@ public:
     void LeftClickHandler(wxCommandEvent &event);
     void GoToPreviousFolder();
     void RenameSelected();
+    void CreateFile();
+    void CreateFolder();
 
 private:
    wxListBox *m_content; 
