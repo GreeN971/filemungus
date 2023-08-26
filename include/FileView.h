@@ -17,6 +17,7 @@ public:
     void RenameSelected();
     void CreateFile();
     void CreateFolder();
+    void RemoveFileFolder();
 
 private:
    wxListBox *m_content; 

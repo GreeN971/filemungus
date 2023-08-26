@@ -15,6 +15,7 @@ list(APPEND SOURCES
     src/RenameDialog.cpp
     src/CustomDialog.cpp
     src/CreateDialog.cpp
+    src/RemoveDialog.cpp
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) 

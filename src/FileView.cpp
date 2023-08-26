@@ -15,10 +15,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fstream>
+#include <stdio.h>
 #include <wx/regex.h>
 #include "FileMenu.h"
 #include "RenameDialog.h"
 #include "CreateDialog.h"
+#include "RemoveDialog.h"
 #include <wx/menu.h>
 #include <wx/msgdlg.h>
 
@@ -242,3 +244,48 @@ void FileView::CreateFolder()
     ScanPath(m_pathLogic->GetPath());
 }
 
+void FileView::RemoveFileFolder()
+{
+    long index = m_content->GetSelection();
+    if(index == wxNOT_FOUND || index == 0)
+        return;
+    
+    wxString selected = m_content->GetString(static_cast<unsigned int>(index));
+    
+    RemoveDialog dlg;
+    dlg.ShowModal();
+    
+    if(!dlg.IsSuccesfull())
+        return;
+
+#ifdef WIN32
+    if(selected.StartsWith(GetFileMarker()))
+    {
+        selected.erase(0, GetFileMarker().size());
+        remove((m_pathLogic->GetPath() + (selected)).c_str());
+    }
+    else if(selected.StartsWith(GetFolderMarker())) 
+    {
+        selected.erase(0, GetFolderMarker().size());
+        _rmdir((m_pathLogic->GetPath() + (selected)).c_str());
+    }
+    else 
+        throw std::runtime_error("Isnt file or folder");
+
+#else 
+    if(selected.StartsWith(GetFileMarker()))
+    {
+        selected.erase(0, GetFileMarker().size());
+        remove((m_pathLogic->GetPath() + (selected)).c_str());
+    }
+    else if(selected.StartsWith(GetFolderMarker())) 
+    {
+        selected.erase(0, GetFolderMarker().size());
+        rmdir((m_pathLogic->GetPath() + (selected)).c_str());
+    }
+    else 
+        throw std::runtime_error("Isnt file or folder");
+
+#endif
+    ScanPath(m_pathLogic->GetPath()); 
+}
