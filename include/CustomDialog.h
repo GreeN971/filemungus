@@ -1,6 +1,12 @@
 #pragma once
 #include <wx/dialog.h>
-
+/*
+enum class FileType 
+{
+    IsFolder,     
+    IsFile
+};
+*/
 class CustomDialog : public wxDialog
 {
 public:

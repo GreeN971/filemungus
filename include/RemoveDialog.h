@@ -1,12 +1,6 @@
 #pragma once
 #include "CustomDialog.h"
 
-enum class FF 
-{
-    IsFolder,     
-    IsFile
-};
-
 class RemoveDialog : public CustomDialog
 {
 public: 
